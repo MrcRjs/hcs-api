@@ -2,6 +2,8 @@ const express = require('express');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
 
+const routes = require('./routes/index.js');
+
 const app = express();
 
 const router = express.Router();
@@ -17,10 +19,7 @@ if (environment !== 'production') {
   app.use(logger('dev'));
 }
 
-app.use('/api', (req, res, next) => {
-  res.send('Initial');
-  next();
-});
+app.use('/api', routes(router));
 
 const port = 8080;
 app.listen(port, () => {
