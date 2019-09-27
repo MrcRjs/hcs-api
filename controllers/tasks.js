@@ -69,8 +69,22 @@ module.exports = {
     deleteTask: (req, res) => {
         const {index} = req.body;
         if (index !== undefined && index !== "") {
-            // TODO: Delete task
-            res.send({user: {"name": "Alice", "email": "Alice@nexus6.com"}, "tasks": ["Task 1", "Task 2"]});
+            mongoose.connect(dbUri, {useNewUrlParser: true})
+                .then(() => {
+                    return User.findOneAndUpdate({
+                        'user.email': req.decoded.user.email
+                    }, {$pull: {'tasks': {'_id': [mongoose.Types.ObjectId(index)]}}}, {
+                        fields,
+                        new: true,
+                        lean: true,
+                        runValidators: true
+                    });
+                }).then((account) => {
+                res.send(account);
+            }).catch(err => {
+                console.error("DB error: ", err);
+                res.sendStatus(500);
+            });
         } else {
             // Missing required value
             console.error("Missing required parameter", req);
