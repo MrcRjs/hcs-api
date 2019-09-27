@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const User = require('../models/users');
 const dbUri = process.env.DB_URI;
 
+const fields = 'user.name user.email tasks -_id';
+
 module.exports = {
     getAllTasks: (req, res) => {
         mongoose.connect(dbUri, {useNewUrlParser: true})
@@ -18,8 +20,15 @@ module.exports = {
         const { title } = req.body;
         console.log(req.body);
         if (title !== undefined && title !== "") {
-            // TODO: Create new task
-            res.send({user: {"name": "Alice", "email": "Alice@nexus6.com"}, "tasks": ["Task 1", "Task 2"]});
+             mongoose.connect(dbUri, {useNewUrlParser: true})
+            .then(() => {
+                return User.findOneAndUpdate({'user.email': req.decoded.user.email}, {$push: {tasks: {title} }}, {fields, new: true, lean: true, runValidators: true});
+            }).then((account) => {
+                res.send(account);
+            }).catch(err => {
+               console.error("DB error: ", err);
+               res.sendStatus(500);
+            });
         }
         else
             {
