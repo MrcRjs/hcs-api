@@ -1,9 +1,10 @@
 const controller = require('../controllers/tasks');
+const validateToken = require('../utils').validateToken;
 
 module.exports = (router) => {
     router.route('/tasks')
-        .get(controller.getAllTasks)
-        .post(controller.createTask)
-        .patch(controller.updateTask)
-        .delete(controller.deleteTask);
+        .get(validateToken, controller.getAllTasks)
+        .post(validateToken, controller.createTask)
+        .patch(validateToken, controller.updateTask)
+        .delete(validateToken, controller.deleteTask);
 };
