@@ -3,6 +3,9 @@ require('dotenv').config();
 const express = require('express');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
+const cors = require('cors');
+
+var allowedOrigins = ['http://localhost:3000'];
 
 const routes = require('./routes/index.js');
 
@@ -13,6 +16,10 @@ const router = express.Router();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true
+}));
+
+app.use(cors({
+  origin: allowedOrigins
 }));
 
 const environment = process.env.NODE_ENV;
