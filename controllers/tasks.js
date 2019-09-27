@@ -43,8 +43,23 @@ module.exports = {
     updateTask: (req, res) => {
         const {title, index} = req.body;
         if ((title !== undefined && title !== "") && (index !== undefined && index !== "")) {
-            // TODO: Update task
-            res.send({user: {"name": "Alice", "email": "Alice@nexus6.com"}, "tasks": ["Task 1", "Task 2"]});
+            mongoose.connect(dbUri, {useNewUrlParser: true})
+                .then(() => {
+                    return User.findOneAndUpdate({
+                        'user.email': req.decoded.user.email,
+                        'tasks._id': mongoose.Types.ObjectId(index)
+                    }, {$set: {'tasks.$': {title}}}, {
+                        fields,
+                        new: true,
+                        lean: true,
+                        runValidators: true
+                    });
+                }).then((account) => {
+                res.send(account);
+            }).catch(err => {
+                console.error("DB error: ", err);
+                res.sendStatus(500);
+            });
         } else {
             // Missing required value
             console.error("Missing required parameter", req);
